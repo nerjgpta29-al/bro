@@ -1,0 +1,182 @@
+const express = require('express');
+const path = require('path');
+const bodyParser = require('body-parser');
+
+const app = express();
+const PORT = 3000;
+
+// Hardcoded user for demo
+const USER = {
+  username: 'user1',
+  password: 'pass123'
+};
+
+app.use(bodyParser.urlencoded({ extended: true }));
+
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'views'));
+
+// Serve static CSS if needed (optional)
+// app.use(express.static(path.join(__dirname, 'public')));
+
+app.get('/', (req, res) => {
+  res.render('login', { error: null });
+});
+
+app.post('/login', (req, res) => {
+  const { username, password } = req.body;
+
+  if (username === USER.username && password === USER.password) {
+    res.render('welcome', { username });
+  } else {
+    res.render('login', { error: 'Invalid username or password' });
+  }
+});
+
+app.listen(PORT, () => {
+  console.log(`Server running on http://localhost:${PORT}`);
+});
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Login</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins&display=swap');
+
+    body {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      font-family: 'Poppins', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .login-container {
+      background: rgba(255, 255, 255, 0.15);
+      padding: 40px 50px;
+      border-radius: 12px;
+      box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+      backdrop-filter: blur(10px);
+      width: 350px;
+      color: white;
+      text-align: center;
+    }
+
+    h2 {
+      margin-bottom: 30px;
+      font-weight: 700;
+      letter-spacing: 1.1px;
+    }
+
+    input[type="text"],
+    input[type="password"] {
+      width: 100%;
+      padding: 12px 15px;
+      margin: 12px 0;
+      border: none;
+      border-radius: 8px;
+      outline: none;
+      font-size: 1em;
+    }
+
+    input[type="text"]:focus,
+    input[type="password"]:focus {
+      box-shadow: 0 0 10px #8a2be2;
+    }
+
+    button {
+      background: #8a2be2;
+      border: none;
+      padding: 14px 20px;
+      width: 100%;
+      color: white;
+      font-weight: 700;
+      font-size: 1.1em;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-top: 15px;
+      transition: background 0.3s ease;
+    }
+
+    button:hover {
+      background: #6a1b9a;
+    }
+
+    .error {
+      background: #ff4e4e;
+      padding: 10px;
+      margin-bottom: 15px;
+      border-radius: 8px;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    <h2>Login</h2>
+
+    <% if (error) { %>
+      <div class="error"><%= error %></div>
+    <% } %>
+
+    <form action="/login" method="POST" novalidate>
+      <input type="text" name="username" placeholder="Username" required minlength="3" />
+      <input type="password" name="password" placeholder="Password" required minlength="6" />
+      <button type="submit">Login</button>
+    </form>
+  </div>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Welcome</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins&display=swap');
+
+    body {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      font-family: 'Poppins', sans-serif;
+      color: white;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 0;
+      flex-direction: column;
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 3em;
+      margin-bottom: 10px;
+      font-weight: 700;
+    }
+
+    a {
+      margin-top: 30px;
+      background: #8a2be2;
+      color: white;
+      text-decoration: none;
+      padding: 12px 25px;
+      border-radius: 8px;
+      font-weight: 700;
+      transition: background 0.3s ease;
+    }
+
+    a:hover {
+      background: #6a1b9a;
+    }
+  </style>
+</head>
+<body>
+  <h1>Welcome, <%= username %>!</h1>
+  <a href="/">Logout</a>
+</body>
+</html>
